@@ -35,16 +35,16 @@ contract WhenLambo is BEP20, Ownable {
 
     WhenLamboDividendTracker public dividendTracker;
 
-    address public deadWallet = 0x000000000000000000000000000000000000dEaD;
-    address public immutable CAKE = 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82; // CAKE
+    address public constant deadWallet = 0x000000000000000000000000000000000000dEaD;
+    address public constant CAKE = 0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82; // CAKE
 
-    uint256 public maxSupply = 100000000000 * (10**18);
+    uint256 public constant maxSupply = 100000000000 * (10**18);
     uint256 public maxTxAmount = 500000000 * (10**18);
-    uint256 public swapTokensAtAmount = 2000000 * (10**18);
+    uint256 public constant swapTokensAtAmount = 2000000 * (10**18);
     
     mapping(address => bool) public _isBlacklisted;
 
-    uint256 public CAKERewardsFee = 7;
+    uint256 public CAKERewardsFee = 7;  
     uint256 public liquidityFee = 3;
     uint256 public marketingFee = 4;
     uint256 public prizePoolFee = 1;
@@ -130,7 +130,7 @@ contract WhenLambo is BEP20, Ownable {
 
   	}
 
-    function updateDividendTracker(address newAddress) public onlyOwner {
+    function updateDividendTracker(address newAddress) external onlyOwner {
         require(newAddress != address(dividendTracker), "WhenLambo: The dividend tracker already has that address");
 
         WhenLamboDividendTracker newDividendTracker = WhenLamboDividendTracker(payable(newAddress));
@@ -147,7 +147,7 @@ contract WhenLambo is BEP20, Ownable {
         dividendTracker = newDividendTracker;
     }
 
-    function updateUniswapV2Router(address newAddress) public onlyOwner {
+    function updateUniswapV2Router(address newAddress) external onlyOwner {
         require(newAddress != address(uniswapV2Router), "WhenLambo: The router already has that address");
         emit UpdateUniswapV2Router(newAddress, address(uniswapV2Router));
         uniswapV2Router = IUniswapV2Router02(newAddress);
@@ -163,7 +163,7 @@ contract WhenLambo is BEP20, Ownable {
         emit ExcludeFromFees(account, excluded);
     }
 
-    function excludeMultipleAccountsFromFees(address[] calldata accounts, bool excluded) public onlyOwner {
+    function excludeMultipleAccountsFromFees(address[] calldata accounts, bool excluded) external onlyOwner {
         for(uint256 i = 0; i < accounts.length; i++) {
             _isExcludedFromFees[accounts[i]] = excluded;
         }
@@ -204,7 +204,7 @@ contract WhenLambo is BEP20, Ownable {
         emit MaxTxAmountUpdated(maxTxAmount);
     }
 
-    function setAutomatedMarketMakerPair(address pair, bool value) public onlyOwner {
+    function setAutomatedMarketMakerPair(address pair, bool value) external onlyOwner {
         require(pair != uniswapV2Pair, "WhenLambo: The PancakeSwap pair cannot be removed from automatedMarketMakerPairs");
 
         _setAutomatedMarketMakerPair(pair, value);
@@ -225,7 +225,7 @@ contract WhenLambo is BEP20, Ownable {
         emit SetAutomatedMarketMakerPair(pair, value);
     }
 
-    function updateGasForProcessing(uint256 newValue) public onlyOwner {
+    function updateGasForProcessing(uint256 newValue) external onlyOwner {
         require(newValue >= 200000 && newValue <= 750000, "WhenLambo: gasForProcessing must be between 200,000 and 750,000");
         require(newValue != gasForProcessing, "WhenLambo: Cannot update gasForProcessing to same value");
         emit GasForProcessingUpdated(newValue, gasForProcessing);
@@ -244,15 +244,15 @@ contract WhenLambo is BEP20, Ownable {
         return dividendTracker.totalDividendsDistributed();
     }
 
-    function isExcludedFromFees(address account) public view returns(bool) {
+    function isExcludedFromFees(address account) external view returns(bool) {
         return _isExcludedFromFees[account];
     }
 
-    function withdrawableDividendOf(address account) public view returns(uint256) {
+    function withdrawableDividendOf(address account) external view returns(uint256) {
     	return dividendTracker.withdrawableDividendOf(account);
   	}
 
-	function dividendTokenBalanceOf(address account) public view returns (uint256) {
+	function dividendTokenBalanceOf(address account) external view returns (uint256) {
 		return dividendTracker.balanceOf(account);
 	}
 
@@ -524,7 +524,7 @@ contract WhenLamboDividendTracker is Ownable, DividendPayingToken {
         require(false, "WhenLambo_Dividend_Tracker: No transfers allowed");
     }
 
-    function withdrawDividend() public override {
+    function withdrawDividend() external override {
         require(false, "WhenLambo_Dividend_Tracker: withdrawDividend disabled. Use the 'claim' function on the main WhenLambo contract.");
     }
 
@@ -598,7 +598,7 @@ contract WhenLamboDividendTracker is Ownable, DividendPayingToken {
     }
 
     function getAccountAtIndex(uint256 index)
-        public view returns (
+        external view returns (
             address,
             int256,
             int256,
@@ -641,7 +641,7 @@ contract WhenLamboDividendTracker is Ownable, DividendPayingToken {
     	processAccount(account, true);
     }
 
-    function process(uint256 gas) public returns (uint256, uint256, uint256) {
+    function process(uint256 gas) external returns (uint256, uint256, uint256) {
     	uint256 numberOfTokenHolders = tokenHoldersMap.keys.length;
 
     	if(numberOfTokenHolders == 0) {

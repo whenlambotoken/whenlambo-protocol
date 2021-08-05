@@ -20,7 +20,7 @@ contract DividendPayingToken is BEP20, Ownable, DividendPayingTokenInterface, Di
     using SafeMathUint for uint256;
     using SafeMathInt for int256;
 
-    address public immutable CAKE = address(0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82); // CAKE
+    address public constant CAKE = address(0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82); // CAKE
 
     // With `magnitude`, we can properly distribute dividends even if the amount of received ether is small.
     // For more discussion about choosing the value of `magnitude`,
@@ -49,7 +49,7 @@ contract DividendPayingToken is BEP20, Ownable, DividendPayingTokenInterface, Di
 
     }
 
-    function distributeCAKEDividends(uint256 amount) public onlyOwner{
+    function distributeCAKEDividends(uint256 amount) external onlyOwner {
         require(totalSupply() > 0);
 
         if (amount > 0) {
@@ -64,7 +64,7 @@ contract DividendPayingToken is BEP20, Ownable, DividendPayingTokenInterface, Di
 
     /// @notice Withdraws the ether distributed to the sender.
     /// @dev It emits a `DividendWithdrawn` event if the amount of withdrawn ether is greater than 0.
-    function withdrawDividend() public virtual override {
+    function withdrawDividend() external virtual override {
         _withdrawDividendOfUser(msg.sender);
     }
 
@@ -91,7 +91,7 @@ contract DividendPayingToken is BEP20, Ownable, DividendPayingTokenInterface, Di
     /// @notice View the amount of dividend in wei that an address can withdraw.
     /// @param _owner The address of a token holder.
     /// @return The amount of dividend in wei that `_owner` can withdraw.
-    function dividendOf(address _owner) public view override returns(uint256) {
+    function dividendOf(address _owner) external view override returns(uint256) {
         return withdrawableDividendOf(_owner);
     }
 
@@ -105,7 +105,7 @@ contract DividendPayingToken is BEP20, Ownable, DividendPayingTokenInterface, Di
     /// @notice View the amount of dividend in wei that an address has withdrawn.
     /// @param _owner The address of a token holder.
     /// @return The amount of dividend in wei that `_owner` has withdrawn.
-    function withdrawnDividendOf(address _owner) public view override returns(uint256) {
+    function withdrawnDividendOf(address _owner) external view override returns(uint256) {
         return withdrawnDividends[_owner];
     }
 

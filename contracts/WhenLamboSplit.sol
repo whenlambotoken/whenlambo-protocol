@@ -3,12 +3,13 @@ pragma solidity 0.6.12;
 
 import "./BEP20.sol";
 import "./utils/SafeMath.sol";
+import "./utils/ReentrancyGuard.sol";
 import "./access/Ownable.sol";
 import "./interfaces/IUniswapV2Pair.sol";
 import "./interfaces/IUniswapV2Factory.sol";
 import "./interfaces/IUniswapV2Router.sol";
 
-contract TokenSplitter is Ownable {
+contract TokenSplitter is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
 
     struct Shareholder {
@@ -38,7 +39,7 @@ contract TokenSplitter is Ownable {
 
     receive() external payable {}
 
-    function splitInTOKEN() external {
+    function splitInTOKEN() external nonReentrant {
         require(shareholders.length > 1, '!shareholders');
         uint256 balance = IBEP20(TOKEN).balanceOf(address(this));
 
@@ -54,7 +55,7 @@ contract TokenSplitter is Ownable {
         }
     }
 
-    function splitInBNB() external {
+    function splitInBNB() external nonReentrant {
         require(shareholders.length > 1, '!shareholders');
 
         uint256 balance = IBEP20(TOKEN).balanceOf(address(this));
@@ -73,7 +74,7 @@ contract TokenSplitter is Ownable {
         }
     }
 
-    function splitInBUSD() external {
+    function splitInBUSD() external nonReentrant {
         require(shareholders.length > 1, '!shareholders');
 
         uint256 balance = IBEP20(TOKEN).balanceOf(address(this));
